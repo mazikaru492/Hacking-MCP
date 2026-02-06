@@ -68,11 +68,8 @@ RUN git clone --depth 1 https://github.com/radareorg/radare2.git /tmp/radare2 &&
 # Zsteg（PNGステガノグラフィ解析）のインストール
 RUN gem install zsteg
 
-# Stegseek（高速Steghideクラッカー）のインストール
-RUN curl -L -o /tmp/stegseek.deb https://github.com/RickdeJager/stegseek/releases/download/v0.6/stegseek_0.6-1.deb && \
-    apt-get update && apt-get install -y /tmp/stegseek.deb && \
-    rm /tmp/stegseek.deb && \
-    rm -rf /var/lib/apt/lists/*
+# Stegseek（高速Steghideクラッカー）のインストール - スキップ（Debian Bookworm互換性問題）
+# 代わりにsteghideを使用（既にインストール済み）
 
 # HashID（Pythonツール）とpdf-parserのインストール
 RUN pip install --no-cache-dir hashid pdf-parser
