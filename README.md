@@ -1,325 +1,241 @@
-# Hacking MCP - 高度なネットワークスキャン・ペネトレーションテストツール
+# Hacking MCP - 自律型セキュリティ研究AI
 
-Hacking MCPは、Claude DesktopとDockerを活用した包括的なネットワークスキャン・ペネトレーションテストツールです。
-nmap、各種セキュリティツールを使用してターゲットシステムの詳細な分析を行い、
-Claude Desktopの知識ベースを活用して脆弱性情報と対策を提供します。
+[![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg)](https://www.docker.com/)
+[![MCP](https://img.shields.io/badge/MCP-Integrated-green.svg)](https://github.com/anthropics/mcp)
 
-## 🚀 特徴
+> **⚠️ 研究目的専用**: このツールは教育・セキュリティ研究目的で提供されています。許可のないシステムへの使用は違法です。
 
-- **Claude Desktopとの統合**: 高度なAI分析による脆弱性評価と対策提案
-- **Dockerコンテナ**: 安全で効率的なスキャン環境
-- **包括的なスキャン機能**: ポートスキャン、Webスキャン、DNS調査
-- **SSH接続後調査**: リモートサーバーの詳細調査とファイル検索
-- **自動化された調査**: flagファイル検索、システム調査
-- **詳細なレポート生成**: 日本語での分かりやすい結果レポート
-- **リアルタイム分析**: スキャン結果の即座なセキュリティ評価
+Claude DesktopとDockerを活用した**自律型セキュリティ研究AI**です。
+自動偵察、エクスプロイト開発支援、権限昇格、ファジングなど、包括的なペネトレーションテスト機能を提供します。
 
-## 🛠️ 機能一覧
+---
 
-### 1. ネットワークスキャン
-- **Nmap基本スキャン**: 開放ポートの検出
-- **Nmap詳細スキャン**: バージョン検出、サービス識別
-- **特定ポートスキャン**: 指定ポートの詳細分析
-- **サービス分析**: 検出されたサービスのセキュリティ評価
+## 🚀 主要機能
 
-### 2. Webセキュリティ調査
-- **HTTPヘッダー分析**: セキュリティヘッダーの確認
-- **技術検出**: CMS、フレームワーク、サーバー技術の識別
-- **ディレクトリスキャン**: 隠しディレクトリ・ファイルの探索
-- **robots.txt分析**: 検索エンジン向け情報の確認
-- **ファイルダウンロード**: 特定ファイルの内容取得
-- **包括的Webスキャン**: 全機能を統合した詳細分析
-- **スクリーンショット取得**: Webページの視覚的記録
+### 🤖 自律ハッキング機能（NEW!）
 
-### 3. DNS調査
-- **DNSレコード取得**: A、AAAA、MX、NS、TXT、CNAME、SOAレコード
-- **サブドメイン列挙**: 自動サブドメイン探索
-- **逆引きDNS**: IPアドレスからのホスト名取得
-- **包括的DNS調査**: 全レコードタイプ + サブドメイン列挙
+| モジュール              | 機能                                                       |
+| ----------------------- | ---------------------------------------------------------- |
+| **Payload Arsenal**     | 60+種類のペイロード（リバースシェル、Webシェル、msfvenom） |
+| **Exploit Development** | シェルコード生成、ROP/ヒープ/FSBテンプレート               |
+| **Auto Reconnaissance** | 完全自動偵察、攻撃面分析、次アクション提案                 |
+| **Post-Exploitation**   | Linux/Windows権限昇格、クレデンシャルハンティング          |
+| **Fuzzer**              | BOF/FSB検出、SQLi/XSS/LFI/SSTIファジング                   |
+| **Memory Module**       | セッション記録、学習ベースの推奨                           |
 
-### 4. SSH接続後調査
-- **ディレクトリ探索**: 現在ディレクトリの詳細調査（テキストファイル内容読み取り付き）
-- **flagファイル検索**: flag*.txt、root.txtファイルの網羅的検索
-- **隠しファイル検索**: ドットファイル、隠しディレクトリの探索
-- **システムディレクトリ調査**: /etc、/var、/tmp等の重要ディレクトリ分析
-- **ファイル管理**: 不要ファイルの削除、整理機能
+### 🔍 偵察・スキャン機能
 
-### 5. 自動化機能
-- **権限昇格コマンド追記**: cronjob.shへの権限昇格コマンド追加
-- **ファイル管理**: 指定パターンのファイル削除・整理機能
+- **Nmapスキャン** - ポートスキャン、サービス検出、バージョン特定
+- **Webスキャン** - HTTPヘッダー分析、ディレクトリ列挙、技術検出
+- **DNS調査** - レコード取得、サブドメイン列挙、逆引きDNS
 
-### 6. レポート生成
-- **スキャン結果レポート**: 各スキャンの詳細結果
-- **セキュリティ評価**: リスクレベルと推奨対策
-- **日本語レポート**: 分かりやすい日本語での結果表示
+### 🏁 CTF支援機能
+
+- **CTF Intelligence** - 暗号、フォレンジック、Web、Pwn自動分析
+- **CTF Strategy** - 問題分類、戦略立案、チェックリスト生成
+- **CTF Toolkit** - sqlmap, binwalk, steghide, zsteg等の統合ツール
+
+---
 
 ## 📋 必要条件
 
-- **Claude Desktop**: 最新バージョン
-- **Docker**: 20.10以上
+- **Claude Desktop** 最新バージョン
+- **Docker** 20.10以上
 - **OS**: Windows 10/11、macOS、Linux
-- **メモリ**: 最低4GB（推奨8GB以上）
-- **ディスク容量**: 最低5GBの空き容量
+- **メモリ**: 推奨8GB以上
+- **ディスク**: 10GBの空き容量
 
-## 🚀 セットアップ手順
+---
 
-### 1. リポジトリのクローン
+## 🛠️ セットアップ
+
+### 1. クローン
+
 ```bash
 git clone https://github.com/makin0n/hacking-mcp.git
 cd hacking-mcp
 ```
 
-### 2. Dockerイメージのビルド
+### 2. Dockerビルド
+
 ```bash
-# 基本的なビルド
 docker build -t hacking-mcp .
-
-# キャッシュを使わずにビルド（問題がある場合）
-docker build --no-cache -t hacking-mcp .
-
-# ビルドログを詳細に表示
-docker build --progress=plain -t hacking-mcp .
 ```
 
-**ビルド内容**:
-- ベースイメージ: Python 3.11-slim
-- インストールツール: nmap、dnsutils、curl、その他のセキュリティツール
-- Python依存関係: anthropic、mcp、playwright、asyncssh等
-- セキュリティ設定: 非rootユーザー（hacker）で実行
+### 3. Claude Desktop設定
 
-### 3. Claude Desktop設定ファイルの配置
+`%APPDATA%\Claude\claude_desktop_config.json` (Windows) に追加:
 
-#### 基本設定（ボリュームマウントなし）
-```bash
-# Windows
-copy "Claude\claude_desktop_config.json" "%APPDATA%\Claude\claude_desktop_config.json"
-
-# macOS
-cp Claude/claude_desktop_config.json ~/Library/Application\ Support/Claude/claude_desktop_config.json
-
-# Linux
-cp Claude/claude_desktop_config.json ~/.config/Claude/claude_desktop_config.json
-```
-
-#### ボリュームマウント付き設定
-```bash
-# Windows
-copy "Claude\claude_desktop_config_with_volume.json" "%APPDATA%\Claude\claude_desktop_config.json"
-```
-
-2. 設定ファイル内のパスを実際のパスに変更:
 ```json
 {
   "mcpServers": {
     "hacking-mcp": {
       "command": "docker",
-      "args": ["run", "--rm", "-v", "C:/Users/<ユーザー名>/Documents/GitHub/hacking-mcp/reports:/app/reports", "--network", "host", "-i", "hacking-mcp"]
+      "args": ["run", "--rm", "--network", "host", "-i", "hacking-mcp"]
     }
+  }
 }
 ```
 
-3. レポートディレクトリを作成:
-```bash
-mkdir reports
-```
+### 4. Claude Desktopを再起動
 
-### 4. Claude Desktopの起動
-Claude Desktopを起動し、MCPサーバーが正常に接続されていることを確認します。
+---
 
-## 📖 使用方法
+## 📖 使用例
 
-### 基本的な使用
-Claude Desktopで以下のような形式で質問を入力してください：
+### 🤖 自律ハッキング
 
 ```
-<対象IPアドレス>をスキャンして
+# 完全自動偵察
+10.10.10.100を自律偵察して
+
+# リバースシェル生成
+bashのリバースシェルを10.10.14.1:4444で作って
+
+# 権限昇格チェック
+Linux権限昇格チェックコマンドを教えて
+
+# BOFエクスプロイト生成
+オフセット264、ターゲット0x401234でBOFエクスプロイトを生成して
+
+# セッション開始と記録
+10.10.10.100のペンテストセッションを開始して
 ```
 
-### 詳細な使用例
+### 🔍 偵察・スキャン
 
-#### 1. ネットワークスキャン
 ```
-# 基本スキャン
-192.168.1.100の基本的なポートスキャンをして
+# ポートスキャン
+192.168.1.100をスキャンして
 
-# 詳細スキャン（ポート指定必須）
-192.168.1.100の80番と443番ポートのサービスバージョンを詳しく調べて
-
-# 特定ポートスキャン
-192.168.1.100の1-1000番ポートをスキャンして
-```
-
-#### 2. Webセキュリティ調査
-```
-# Webサイトの基本情報
-https://example.comの基本情報を取得して
-
-# ディレクトリスキャン
-https://example.comのディレクトリスキャンをして
-
-# 技術検出
-https://example.comで使用されている技術を検出して
-
-# 包括的Webスキャン
-https://example.comの包括的Webスキャンを実行して
-
-# Webセキュリティ監査
+# Webスキャン
 https://example.comのWebセキュリティ監査を実行して
-```
 
-#### 3. DNS調査
-```
-# DNSレコード取得
-example.comのDNSレコードを取得して
-
-# サブドメイン列挙
-example.comのサブドメインを探索して
-
-# 逆引きDNS
-192.168.1.100の逆引きDNSを実行して
-
-# 包括的DNS調査
+# DNS調査
 example.comの包括的DNS調査を実行して
 ```
 
-#### 4. SSH接続後調査
+### 🏁 CTF支援
+
 ```
-# 現在ディレクトリの探索
-SSH接続後の現在ディレクトリを探索して
+# CTF問題分析
+このCTF問題を分析して: base64エンコードされたデータ...
 
-# flagファイル検索
-SSH接続後のflagファイルを探して
+# CTF戦略アドバイス
+このCrypto問題の解き方を教えて
 
-# 隠しファイル検索
-SSH接続後の隠しファイルを探して
-
-# システムディレクトリ調査
-SSH接続後のシステムディレクトリを調査して
-
-# 包括的システム調査
-SSH接続後の包括的なシステム調査を実行して
+# フォレンジック解析
+このPNG画像をステガノグラフィ解析して
 ```
 
-#### 5. 自動化機能
-```
-# 権限昇格コマンド追記
-cronjob.shにroot権限取得コマンドを追記して
-
-# ファイル管理
-SSH接続後のファイルを整理して
-
-# 指定パターンのファイル削除
-SSH接続後の*.txtファイルを削除して
-```
-
-#### 6. 包括的調査
-```
-# クイック調査
-192.168.1.100のクイック調査を実行して
-
-# 包括的調査
-192.168.1.100の包括的調査を実行して
-
-# ドメイン調査
-example.comの包括的な調査を実行して
-
-# レポート付き調査
-192.168.1.100の包括的調査をレポート付きで実行して
-```
-
-## 🔧 高度な機能
-
-### スキャナーステータス確認
-```
-スキャナーのステータスを確認して
-```
-
-### ワードリスト確認
-```
-利用可能なワードリストを表示して
-```
-
-### レポート生成
-```
-192.168.1.100の包括的調査をレポート付きで実行して
-```
+---
 
 ## 📁 プロジェクト構造
 
 ```
 hacking-mcp/
-├── main.py                 # メインMCPサーバー
-├── Dockerfile             # Docker設定
-├── requirements.txt       # Python依存関係
-├── startup.sh            # 起動スクリプト
-├── modules/              # スキャナーモジュール
-│   ├── nmap_scanner.py   # Nmapスキャン機能
-│   ├── web_scanner.py    # Webスキャン機能
-│   ├── dns_scanner.py    # DNS調査機能
-│   ├── ssh_explorer.py   # SSH調査機能
-│   └── service_analyzer.py # サービス分析機能
-├── utils/                # ユーティリティ
-│   └── report_manager.py # レポート管理機能
-├── Claude/               # Claude Desktop設定
-│   ├── claude_desktop_config.json
-│   └── claude_desktop_config_with_volume.json
-└── reports/              # レポート保存ディレクトリ
+├── main.py                    # メインMCPサーバー（100+ツールエンドポイント）
+├── Dockerfile                 # Docker設定
+├── requirements.txt           # Python依存関係
+├── modules/
+│   ├── nmap_scanner.py        # Nmapスキャン
+│   ├── web_scanner.py         # Webスキャン
+│   ├── dns_scanner.py         # DNS調査
+│   ├── ssh_explorer.py        # SSH調査
+│   ├── service_analyzer.py    # サービス分析
+│   ├── ctf_toolkit.py         # CTFツールキット
+│   ├── ctf_intelligence.py    # CTF AI分析
+│   ├── ctf_strategy.py        # CTF戦略アドバイザー
+│   ├── payload_arsenal.py     # ペイロード生成 (NEW)
+│   ├── exploit_dev.py         # エクスプロイト開発 (NEW)
+│   ├── auto_recon.py          # 自動偵察 (NEW)
+│   ├── post_exploit.py        # ポストエクスプロイト (NEW)
+│   ├── fuzzer.py              # ファジング (NEW)
+│   └── memory_module.py       # メモリ/学習 (NEW)
+└── utils/
+    └── report_manager.py      # レポート管理
 ```
 
-## ⚠️ 注意事項
+---
 
-### 法的・倫理的考慮事項
-- **許可された環境でのみ使用**: 所有権のあるシステムまたは明示的な許可を得たシステムでのみ使用してください
-- **責任ある使用**: ペネトレーションテストは教育・研究目的で使用してください
-- **法的遵守**: 各国の法律・規制を遵守してください
+## 🔧 MCPツール一覧（100+）
 
-### 技術的注意事項
-- **ポート指定**: 詳細スキャンではポート指定が必須です
-- **ネットワーク設定**: 一部の機能はネットワーク設定に依存します
-- **リソース使用**: 大規模スキャンは時間とリソースを消費します
-- **Docker権限**: 一部の機能にはDocker権限が必要です
-- **HTTP/HTTPS URL**: HTTP/HTTPSのURLが指定された場合はポートスキャンをスキップします
+### Payload Arsenal
+
+- `get_reverse_shell` - リバースシェル（bash, python, php, nc, powershell等）
+- `get_webshell` - Webシェル（PHP, ASP, JSP）
+- `get_msfvenom_payload` - msfvenomコマンド生成
+- `get_privesc_payload` - 権限昇格ペイロード
+- `get_tty_upgrade` - TTYシェルアップグレード
+
+### Exploit Development
+
+- `pattern_create` / `pattern_offset` - BOFオフセット特定
+- `get_shellcode` - Linux x86/x64シェルコード
+- `get_rop_template` - ROPエクスプロイトテンプレート
+- `get_heap_template` - ヒープエクスプロイト（tcache, fastbin）
+- `generate_bof_exploit` - BOFエクスプロイト自動生成
+
+### Auto Reconnaissance
+
+- `auto_recon_full` - 完全自動偵察
+- `auto_recon_web` - Web専用偵察
+- `suggest_next_action` - 次アクション提案
+
+### Post-Exploitation
+
+- `get_linux_privesc_checks` - Linux権限昇格コマンド
+- `get_windows_privesc_checks` - Windows権限昇格コマンド
+- `get_credential_locations` - クレデンシャル発見場所
+- `get_kernel_exploits` - カーネル脆弱性提案
+- `get_persistence_methods` - 永続化手法
+
+### Fuzzer
+
+- `fuzz_pattern_create` / `fuzz_pattern_offset` - パターン生成
+- `fuzz_web_payloads` - SQLi/XSS/LFI/SSTI/CMDペイロード
+- `fuzz_wfuzz_command` - wfuzzコマンド生成
+
+### Memory Module
+
+- `memory_start_session` - セッション開始
+- `memory_record_action` - アクション記録
+- `memory_suggest` - 履歴ベース推奨
+
+---
+
+## ⚠️ 法的・倫理的注意事項
+
+- **許可されたシステムでのみ使用**してください
+- **教育・研究目的**での使用を想定しています
+- 各国の法律・規制を遵守してください
+- 不正アクセスは刑事罰の対象となります
+
+---
 
 ## 🐛 トラブルシューティング
 
 ### Dockerビルドエラー
-```bash
-# キャッシュクリア
-docker system prune -a
 
-# 詳細ログでビルド
-docker build --progress=plain --no-cache -t hacking-mcp .
+```bash
+docker system prune -a
+docker build --no-cache -t hacking-mcp .
 ```
 
 ### Claude Desktop接続エラー
+
 1. 設定ファイルのパスを確認
 2. Dockerイメージが正常にビルドされているか確認
-3. ポート競合がないか確認
+3. Claude Desktopを再起動
 
-### スキャンエラー
-1. ターゲットの到達可能性を確認
-2. ファイアウォール設定を確認
-3. 必要な権限があるか確認
-
-## 🤝 貢献
-
-プロジェクトへの貢献を歓迎します：
-
-1. フォークを作成
-2. 機能ブランチを作成 (`git checkout -b feature/AmazingFeature`)
-3. 変更をコミット (`git commit -m 'Add some AmazingFeature'`)
-4. ブランチにプッシュ (`git push origin feature/AmazingFeature`)
-5. プルリクエストを作成
+---
 
 ## 📄 ライセンス
 
 このプロジェクトは教育・研究目的で提供されています。
 使用にあたっては、適切な法的・倫理的考慮を行ってください。
 
-## 📞 サポート
-
-問題や質問がある場合は、GitHubのIssuesページで報告してください。
-
 ---
 
-**⚠️ 免責事項**: このツールは教育・研究目的で提供されています。使用にあたっては、適切な法的・倫理的考慮を行い、責任ある使用を心がけてください。
+**⚠️ 免責事項**: このツールの使用によって生じたいかなる損害・法的問題についても、開発者は責任を負いません。
