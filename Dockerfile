@@ -77,6 +77,9 @@ RUN curl -L -o /tmp/stegseek.deb https://github.com/RickdeJager/stegseek/release
 # HashID（Pythonツール）とpdf-parserのインストール
 RUN pip install --no-cache-dir hashid pdf-parser
 
+# Pwntools/Ropper (エクスプロイト開発用)
+RUN pip install --no-cache-dir pwntools ropper
+
 # Wordlistsのダウンロード（rockyou.txt）
 RUN mkdir -p /usr/share/wordlists && \
     curl -L -o /usr/share/wordlists/rockyou.txt.gz \
@@ -87,6 +90,13 @@ RUN mkdir -p /usr/share/wordlists && \
 RUN mkdir -p /usr/share/wordlists/dirb && \
     curl -L -o /usr/share/wordlists/dirb/common.txt \
     https://raw.githubusercontent.com/v0re/dirb/master/wordlists/common.txt
+
+# WFuzz wordlistsのダウンロード
+RUN mkdir -p /usr/share/wfuzz/wordlist/Injections && \
+    curl -L -o /usr/share/wfuzz/wordlist/Injections/SQL.txt \
+    https://raw.githubusercontent.com/danielmiessler/SecLists/master/Fuzzing/SQLi/Generic-SQLi.txt && \
+    curl -L -o /usr/share/wfuzz/wordlist/Injections/XSS.txt \
+    https://raw.githubusercontent.com/danielmiessler/SecLists/master/Fuzzing/XSS/XSS-Cheat-Sheet-PortSwigger.txt || true
 
 # 非rootユーザー作成・sudo設定を無効化（root実行に変更）
 # RUN useradd -m -s /bin/bash hacker
@@ -110,6 +120,9 @@ RUN mkdir -p scan_results
 
 # レポート保存用のディレクトリを作成し、全ユーザーに書き込み権限を付与
 RUN mkdir -p /app/reports && chmod 777 /app/reports
+
+# メモリモジュール用ディレクトリ
+RUN mkdir -p /app/memory && chmod 777 /app/memory
 
 # スタートアップスクリプトをコピー
 COPY startup.sh .

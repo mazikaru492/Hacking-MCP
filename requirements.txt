@@ -11,3 +11,5 @@ paramiko>=3.4.0
 asyncssh
 pycryptodome>=3.20.0
 hashid>=3.1.4
+pwntools>=4.12.0
+ropper>=1.13.0

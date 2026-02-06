@@ -16,6 +16,12 @@ from modules.ssh_explorer import SSHExplorer
 from modules.ctf_toolkit import CTFToolkit
 from modules.ctf_intelligence import CTFIntelligence
 from modules.ctf_strategy import CTFStrategy
+from modules.payload_arsenal import PayloadArsenal
+from modules.exploit_dev import ExploitDev
+from modules.auto_recon import AutoRecon
+from modules.post_exploit import PostExploit
+from modules.fuzzer import Fuzzer
+from modules.memory_module import MemoryModule
 from utils.report_manager import ReportManager
 
 # 統合MCPサーバーの初期化
@@ -30,6 +36,12 @@ ssh_explorer = SSHExplorer()
 ctf_toolkit = CTFToolkit()
 ctf_intelligence = CTFIntelligence()
 ctf_strategy = CTFStrategy()
+payload_arsenal = PayloadArsenal()
+exploit_dev = ExploitDev()
+auto_recon = AutoRecon()
+post_exploit = PostExploit()
+fuzzer = Fuzzer()
+memory_module = MemoryModule()
 
 # =============================================================================
 # Nmap関連ツール
@@ -1085,8 +1097,423 @@ async def ctf_strategy_status() -> str:
     return await ctf_strategy.get_status()
 
 
+# =============================================================================
+# Payload Arsenal（ペイロードアーセナル）
+# =============================================================================
+
+@mcp.tool()
+async def get_reverse_shell(shell_type: str, ip: str, port: int) -> str:
+    """リバースシェルペイロードを生成
+
+    Args:
+        shell_type: シェルタイプ (bash, python, php, perl, nc, powershell等)
+        ip: 攻撃者のIPアドレス
+        port: リスニングポート
+    """
+    return payload_arsenal.get_reverse_shell(shell_type, ip, port)
+
+@mcp.tool()
+async def get_bind_shell(shell_type: str, port: int) -> str:
+    """バインドシェルペイロードを生成
+
+    Args:
+        shell_type: シェルタイプ (python, nc, perl等)
+        port: バインドするポート
+    """
+    return payload_arsenal.get_bind_shell(shell_type, port)
+
+@mcp.tool()
+async def get_webshell(shell_type: str) -> str:
+    """Webシェルを生成
+
+    Args:
+        shell_type: シェルタイプ (php, asp, aspx, jsp)
+    """
+    return payload_arsenal.get_webshell(shell_type)
+
+@mcp.tool()
+async def get_msfvenom_payload(payload_type: str, ip: str, port: int,
+                                format_type: str = "raw") -> str:
+    """msfvenomペイロード生成コマンドを返す
+
+    Args:
+        payload_type: タイプ (linux_x64, windows_x64, php等)
+        ip: LHOST
+        port: LPORT
+        format_type: 出力フォーマット
+    """
+    return payload_arsenal.get_msfvenom_payload(payload_type, ip, port, format_type)
+
+@mcp.tool()
+async def get_privesc_payload(privesc_type: str) -> str:
+    """権限昇格ペイロードを生成
+
+    Args:
+        privesc_type: タイプ (suid_bash, sudo_vi, docker等)
+    """
+    return payload_arsenal.get_privesc_payload(privesc_type)
+
+@mcp.tool()
+async def get_tty_upgrade() -> str:
+    """TTYシェルアップグレード方法を返す"""
+    return payload_arsenal.get_tty_upgrade()
+
+@mcp.tool()
+async def get_file_transfer(method: str) -> str:
+    """ファイル転送方法を返す
+
+    Args:
+        method: 転送方法 (wget, curl, nc, python, base64等)
+    """
+    return payload_arsenal.get_file_transfer(method)
+
+@mcp.tool()
+async def list_all_payloads() -> str:
+    """利用可能な全ペイロードをリスト"""
+    return payload_arsenal.list_all_payloads()
+
+
+# =============================================================================
+# Exploit Development（エクスプロイト開発）
+# =============================================================================
+
+@mcp.tool()
+async def pattern_create(length: int) -> str:
+    """サイクリックパターンを生成（BOFオフセット特定用）
+
+    Args:
+        length: パターン長
+    """
+    return exploit_dev.pattern_create(length)
+
+@mcp.tool()
+async def pattern_offset(pattern: str, value: str) -> str:
+    """パターン内のオフセットを検索
+
+    Args:
+        pattern: 生成したパターン
+        value: 検索する値（hex or 文字列）
+    """
+    return exploit_dev.pattern_offset(pattern, value)
+
+@mcp.tool()
+async def get_shellcode(shellcode_type: str, format_type: str = "python") -> str:
+    """シェルコードを取得
+
+    Args:
+        shellcode_type: タイプ (linux_x86_execve, linux_x64_execve等)
+        format_type: 出力フォーマット (python, c, hex, raw)
+    """
+    return exploit_dev.get_shellcode(shellcode_type, format_type)
+
+@mcp.tool()
+async def generate_nop_sled(length: int) -> str:
+    """NOPスレッドを生成
+
+    Args:
+        length: 長さ
+    """
+    return exploit_dev.generate_nop_sled(length)
+
+@mcp.tool()
+async def get_rop_template(arch: str = "x64") -> str:
+    """ROPエクスプロイトテンプレートを生成
+
+    Args:
+        arch: アーキテクチャ (x86, x64)
+    """
+    return exploit_dev.get_rop_template(arch)
+
+@mcp.tool()
+async def get_format_string_template() -> str:
+    """フォーマット文字列エクスプロイトテンプレート"""
+    return exploit_dev.get_format_string_template()
+
+@mcp.tool()
+async def get_heap_template(technique: str = "tcache") -> str:
+    """ヒープエクスプロイトテンプレート
+
+    Args:
+        technique: テクニック (tcache, fastbin, house_of_force)
+    """
+    return exploit_dev.get_heap_template(technique)
+
+@mcp.tool()
+async def generate_bof_exploit(offset: int, target_addr: int,
+                                arch: str = "x64", shellcode: bool = False) -> str:
+    """バッファオーバーフローエクスプロイトを生成
+
+    Args:
+        offset: リターンアドレスまでのオフセット
+        target_addr: ジャンプ先アドレス
+        arch: アーキテクチャ (x86, x64)
+        shellcode: シェルコードを含めるか
+    """
+    return await exploit_dev.generate_bof_exploit(offset, target_addr, arch, shellcode)
+
+
+# =============================================================================
+# Auto Reconnaissance（自動偵察）
+# =============================================================================
+
+@mcp.tool()
+async def auto_recon_full(target: str) -> str:
+    """ターゲットに対する完全自動偵察
+
+    Args:
+        target: ターゲットIPまたはホスト名
+    """
+    return await auto_recon.full_recon(target)
+
+@mcp.tool()
+async def auto_recon_web(url: str) -> str:
+    """Web専用の詳細偵察
+
+    Args:
+        url: ターゲットURL
+    """
+    return await auto_recon.web_recon(url)
+
+@mcp.tool()
+async def suggest_next_action(target: str, current_state: str) -> str:
+    """現在の状態から次のアクションを提案
+
+    Args:
+        target: ターゲット
+        current_state: 現在の状態説明
+    """
+    return auto_recon.suggest_next_action(target, current_state)
+
+
+# =============================================================================
+# Post-Exploitation（ポストエクスプロイト）
+# =============================================================================
+
+@mcp.tool()
+async def get_linux_privesc_checks() -> str:
+    """Linux権限昇格チェックコマンド一覧"""
+    return post_exploit.get_linux_privesc_checks()
+
+@mcp.tool()
+async def get_linux_privesc_scripts() -> str:
+    """Linux権限昇格自動化スクリプト（LinPEAS等）"""
+    return post_exploit.get_linux_privesc_scripts()
+
+@mcp.tool()
+async def get_windows_privesc_checks() -> str:
+    """Windows権限昇格チェックコマンド一覧"""
+    return post_exploit.get_windows_privesc_checks()
+
+@mcp.tool()
+async def get_windows_privesc_scripts() -> str:
+    """Windows権限昇格自動化スクリプト（WinPEAS等）"""
+    return post_exploit.get_windows_privesc_scripts()
+
+@mcp.tool()
+async def get_credential_locations(os_type: str = "linux") -> str:
+    """クレデンシャル発見場所
+
+    Args:
+        os_type: Target OS (linux, windows)
+    """
+    return post_exploit.get_credential_locations(os_type)
+
+@mcp.tool()
+async def get_kernel_exploits(kernel_version: str) -> str:
+    """カーネルバージョンから既知のエクスプロイトを提案
+
+    Args:
+        kernel_version: カーネルバージョン (例: 5.4.0)
+    """
+    return post_exploit.get_kernel_exploits(kernel_version)
+
+@mcp.tool()
+async def get_persistence_methods(os_type: str = "linux") -> str:
+    """永続化手法
+
+    Args:
+        os_type: linux or windows
+    """
+    return post_exploit.get_persistence_methods(os_type)
+
+
+# =============================================================================
+# Fuzzer（ファジング）
+# =============================================================================
+
+@mcp.tool()
+async def fuzz_pattern_create(length: int) -> str:
+    """サイクリックパターンを生成
+
+    Args:
+        length: 生成するパターン長
+    """
+    return fuzzer.generate_pattern(length)
+
+@mcp.tool()
+async def fuzz_pattern_offset(pattern: str, value: str) -> str:
+    """パターン内のオフセットを検索
+
+    Args:
+        pattern: 生成したパターン
+        value: 検索値
+    """
+    return fuzzer.find_pattern_offset(pattern, value)
+
+@mcp.tool()
+async def fuzz_generate_bof_payloads(start_len: int = 100, end_len: int = 3000,
+                                      step: int = 100) -> str:
+    """BOFテスト用ペイロードリストを生成
+
+    Args:
+        start_len: 開始長
+        end_len: 終了長
+        step: 増分
+    """
+    return fuzzer.generate_bof_payloads(start_len, end_len, step)
+
+@mcp.tool()
+async def fuzz_bof_template() -> str:
+    """BOFエクスプロイトテンプレート"""
+    return fuzzer.get_bof_exploit_template()
+
+@mcp.tool()
+async def fuzz_format_string_payloads() -> str:
+    """フォーマット文字列脆弱性テスト用ペイロード"""
+    return fuzzer.generate_format_string_payloads()
+
+@mcp.tool()
+async def fuzz_format_string_template() -> str:
+    """フォーマット文字列エクスプロイトテンプレート"""
+    return fuzzer.get_format_string_exploit()
+
+@mcp.tool()
+async def fuzz_web_payloads(vuln_type: str = "all") -> str:
+    """Web脆弱性ファジング用ペイロード
+
+    Args:
+        vuln_type: タイプ (sqli, xss, lfi, ssti, cmd, all)
+    """
+    return fuzzer.generate_web_fuzz_payloads(vuln_type)
+
+@mcp.tool()
+async def fuzz_wfuzz_command(url: str, param: str, wordlist: str = "sqli") -> str:
+    """wfuzzコマンド生成
+
+    Args:
+        url: ターゲットURL
+        param: ファジングするパラメータ
+        wordlist: ワードリストタイプ
+    """
+    return await fuzzer.generate_wfuzz_command(url, param, wordlist)
+
+
+# =============================================================================
+# Memory Module（メモリ/学習）
+# =============================================================================
+
+@mcp.tool()
+async def memory_start_session(target: str, session_type: str = "pentest") -> str:
+    """新しい攻撃セッションを開始
+
+    Args:
+        target: ターゲット
+        session_type: セッションタイプ (pentest, ctf, research)
+    """
+    return memory_module.start_session(target, session_type)
+
+@mcp.tool()
+async def memory_record_action(session_id: str, action: str,
+                                result: str, success: bool) -> str:
+    """アクションを記録
+
+    Args:
+        session_id: セッションID
+        action: 実行したアクション
+        result: 結果
+        success: 成功したか
+    """
+    return memory_module.record_action(session_id, action, result, success)
+
+@mcp.tool()
+async def memory_add_discovery(session_id: str, discovery_type: str,
+                                data: str) -> str:
+    """発見した情報を記録
+
+    Args:
+        session_id: セッションID
+        discovery_type: タイプ (port, service, vuln, cred, file)
+        data: 発見したデータ
+    """
+    return memory_module.add_discovery(session_id, discovery_type, data)
+
+@mcp.tool()
+async def memory_get_session(session_id: str) -> str:
+    """セッションのサマリーを取得
+
+    Args:
+        session_id: セッションID
+    """
+    return memory_module.get_session_summary(session_id)
+
+@mcp.tool()
+async def memory_list_sessions() -> str:
+    """全セッション一覧"""
+    return memory_module.list_sessions()
+
+@mcp.tool()
+async def memory_add_knowledge(category: str, key: str, value: str) -> str:
+    """知識を追加
+
+    Args:
+        category: カテゴリ (service, exploit, technique)
+        key: キー
+        value: 知識内容
+    """
+    return memory_module.add_knowledge(category, key, value)
+
+@mcp.tool()
+async def memory_search_knowledge(query: str) -> str:
+    """知識を検索
+
+    Args:
+        query: 検索クエリ
+    """
+    return memory_module.search_knowledge(query)
+
+@mcp.tool()
+async def memory_suggest(service: str, version: str = None) -> str:
+    """履歴に基づいて推奨アクションを提案
+
+    Args:
+        service: サービス名
+        version: バージョン
+    """
+    return memory_module.suggest_based_on_history(service, version)
+
+
+# =============================================================================
+# 統合ステータス
+# =============================================================================
+
+@mcp.tool()
+async def autonomous_hacking_status() -> str:
+    """自律ハッキングシステムの全モジュールステータス"""
+    results = []
+    results.append("=== Autonomous Hacking System Status ===\n")
+
+    results.append(await payload_arsenal.get_status())
+    results.append(await exploit_dev.get_status())
+    results.append(await auto_recon.get_status())
+    results.append(await post_exploit.get_status())
+    results.append(await fuzzer.get_status())
+    results.append(await memory_module.get_status())
+
+    return '\n'.join(results)
+
+
 if __name__ == "__main__":
-    print("Starting Advanced Recon Scanner MCP server...", file=sys.stderr)
-    print("Modules loaded: nmap_scanner, web_scanner, dns_scanner, service_analyzer, ssh_explorer, ctf_toolkit, ctf_intelligence, ctf_strategy", file=sys.stderr)
-    print("Features: Network scanning, Web analysis, DNS investigation, Service security analysis, SSH post-connection investigation, CTF Toolkit, CTF AI Intelligence, CTF Strategy Advisor", file=sys.stderr)
+    print("Starting Autonomous Hacking MCP server...", file=sys.stderr)
+    print("Modules loaded: nmap, web, dns, service_analyzer, ssh, ctf_toolkit, ctf_intelligence, ctf_strategy, payload_arsenal, exploit_dev, auto_recon, post_exploit, fuzzer, memory", file=sys.stderr)
+    print("Features: Autonomous Reconnaissance, Exploit Development, Post-Exploitation, Fuzzing, Memory/Learning", file=sys.stderr)
     mcp.run()
