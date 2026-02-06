@@ -22,6 +22,7 @@ from modules.auto_recon import AutoRecon
 from modules.post_exploit import PostExploit
 from modules.fuzzer import Fuzzer
 from modules.memory_module import MemoryModule
+from modules.ctf_solver import CTFSolver
 from utils.report_manager import ReportManager
 
 # 統合MCPサーバーの初期化
@@ -42,6 +43,7 @@ auto_recon = AutoRecon()
 post_exploit = PostExploit()
 fuzzer = Fuzzer()
 memory_module = MemoryModule()
+ctf_solver = CTFSolver()
 
 # =============================================================================
 # Nmap関連ツール
@@ -1510,6 +1512,72 @@ async def autonomous_hacking_status() -> str:
     results.append(await memory_module.get_status())
 
     return '\n'.join(results)
+
+
+# =============================================================================
+# CTF Auto-Solver（完全自律CTF問題解決）
+# =============================================================================
+
+@mcp.tool()
+async def ctf_solve(problem: str, data: str = "", category: str = "auto", flag_format: str = None) -> str:
+    """CTF問題を完全自律で解決し、フラグのみを出力
+
+    Args:
+        problem: 問題文
+        data: 問題データ（暗号文、ファイル内容など）
+        category: カテゴリ（auto, crypto, forensics, web, pwn, misc）
+        flag_format: カスタムフラグ形式（例: "MYCTF{.*}"）
+
+    Returns:
+        フラグのみ
+    """
+    return await ctf_solver.auto_solve(problem, data, category, flag_format)
+
+@mcp.tool()
+def ctf_decode_multi(data: str) -> str:
+    """複数のエンコーディングを自動検出して全てデコードし、フラグを抽出
+
+    Args:
+        data: エンコードされたデータ
+
+    Returns:
+        フラグまたはデコード結果
+    """
+    return ctf_solver.decode_multi(data)
+
+@mcp.tool()
+def ctf_extract_flags(text: str, custom_format: str = None) -> str:
+    """テキストからCTFフラグを抽出
+
+    Args:
+        text: 検索対象テキスト
+        custom_format: カスタムフラグ形式（例: "MYCTF{.*}"）
+
+    Returns:
+        見つかったフラグ一覧
+    """
+    flags = ctf_solver.extract_flags(text, custom_format)
+    if flags:
+        return '\n'.join(flags)
+    return "フラグが見つかりませんでした"
+
+@mcp.tool()
+def ctf_solve_crypto(data: str, hint: str = "") -> str:
+    """暗号問題を自動解読してフラグを抽出
+
+    Args:
+        data: 暗号文
+        hint: ヒント（任意）
+
+    Returns:
+        フラグまたは解読結果
+    """
+    return ctf_solver.solve_crypto(data, hint)
+
+@mcp.tool()
+async def ctf_solver_status() -> str:
+    """CTF Auto-Solverのステータス"""
+    return await ctf_solver.get_status()
 
 
 if __name__ == "__main__":
