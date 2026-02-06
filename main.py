@@ -14,6 +14,8 @@ from modules.dns_scanner import DNSScanner
 from modules.service_analyzer import ServiceAnalyzer
 from modules.ssh_explorer import SSHExplorer
 from modules.ctf_toolkit import CTFToolkit
+from modules.ctf_intelligence import CTFIntelligence
+from modules.ctf_strategy import CTFStrategy
 from utils.report_manager import ReportManager
 
 # 統合MCPサーバーの初期化
@@ -26,6 +28,8 @@ dns_scanner = DNSScanner()
 service_analyzer = ServiceAnalyzer()
 ssh_explorer = SSHExplorer()
 ctf_toolkit = CTFToolkit()
+ctf_intelligence = CTFIntelligence()
+ctf_strategy = CTFStrategy()
 
 # =============================================================================
 # Nmap関連ツール
@@ -903,8 +907,186 @@ async def ctf_toolkit_status() -> str:
     return await ctf_toolkit.get_status()
 
 
+# =============================================================================
+# CTF Toolkit 追加ツール
+# =============================================================================
+
+@mcp.tool()
+async def ctf_zsteg(file_path: str, options: Optional[str] = None) -> str:
+    """Zstegでpng/bmpのステガノグラフィを検出
+
+    Args:
+        file_path: 解析対象のPNG/BMPファイル
+        options: 追加オプション（例: "-a" で全チャンネル解析）
+    """
+    return await ctf_toolkit.zsteg_analyze(file_path, options)
+
+@mcp.tool()
+async def ctf_pngcheck(file_path: str) -> str:
+    """PNGCheckでPNGファイルの整合性をチェック
+
+    Args:
+        file_path: チェック対象のPNGファイル
+    """
+    return await ctf_toolkit.pngcheck_analyze(file_path)
+
+@mcp.tool()
+async def ctf_xxd(file_path: str, length: int = 256) -> str:
+    """xxdでファイルの16進ダンプを取得
+
+    Args:
+        file_path: ダンプ対象ファイル
+        length: 表示するバイト数（デフォルト: 256）
+    """
+    return await ctf_toolkit.xxd_dump(file_path, length)
+
+@mcp.tool()
+async def ctf_file(file_path: str) -> str:
+    """fileコマンドでファイルタイプを識別
+
+    Args:
+        file_path: 識別対象ファイル
+    """
+    return await ctf_toolkit.file_identify(file_path)
+
+@mcp.tool()
+async def ctf_fcrackzip(file_path: str, wordlist: str = "/usr/share/wordlists/rockyou.txt") -> str:
+    """fcrackzipでZIPファイルのパスワードをクラック
+
+    Args:
+        file_path: パスワード付きZIPファイル
+        wordlist: 使用するワードリスト
+    """
+    return await ctf_toolkit.fcrackzip_crack(file_path, wordlist)
+
+@mcp.tool()
+async def ctf_hashid(hash_string: str) -> str:
+    """hashidでハッシュタイプを識別
+
+    Args:
+        hash_string: 識別対象のハッシュ文字列
+    """
+    return await ctf_toolkit.identify_hash(hash_string)
+
+@mcp.tool()
+async def ctf_stegseek(file_path: str, wordlist: str = "/usr/share/wordlists/rockyou.txt") -> str:
+    """Stegseekで高速steghideパスワードクラック
+
+    Args:
+        file_path: 対象ファイル（JPEG, BMP等）
+        wordlist: 使用するワードリスト
+    """
+    return await ctf_toolkit.stegseek_extract(file_path, wordlist)
+
+@mcp.tool()
+async def ctf_pdfparser(file_path: str) -> str:
+    """pdf-parserでPDF構造を解析
+
+    Args:
+        file_path: 解析対象のPDFファイル
+    """
+    return await ctf_toolkit.pdfparser_analyze(file_path)
+
+
+# =============================================================================
+# CTF Intelligence ツール（AI支援分析）
+# =============================================================================
+
+@mcp.tool()
+async def ctf_analyze_crypto(text: str) -> str:
+    """暗号テキストを自動分析（Base64, Hex, ROT13, Caesar, ハッシュ識別等）
+
+    Args:
+        text: 分析対象の暗号文または文字列
+    """
+    return await ctf_intelligence.analyze_crypto(text)
+
+@mcp.tool()
+async def ctf_analyze_file(file_path: str) -> str:
+    """ファイルをフォレンジック分析（マジックバイト、エントロピー、CTFパターン検索）
+
+    Args:
+        file_path: 分析対象のファイル
+    """
+    return await ctf_intelligence.analyze_file(file_path)
+
+@mcp.tool()
+async def ctf_analyze_binary(file_path: str) -> str:
+    """バイナリのセキュリティ機能を分析（checksec相当：PIE, NX, Canary等）
+
+    Args:
+        file_path: 解析対象のELFバイナリ
+    """
+    return await ctf_intelligence.analyze_binary(file_path)
+
+@mcp.tool()
+async def ctf_web_payloads(vuln_type: str) -> str:
+    """Web脆弱性のペイロード一覧を取得（sql, xss, ssti, lfi）
+
+    Args:
+        vuln_type: 脆弱性タイプ（sql, xss, ssti, lfi）
+    """
+    return await ctf_intelligence.get_web_payloads(vuln_type)
+
+@mcp.tool()
+async def ctf_exploit_strategy(vuln_type: str) -> str:
+    """エクスプロイト戦略の提案（bof, format, rop, heap）
+
+    Args:
+        vuln_type: 脆弱性タイプ（bof, format, rop, heap）
+    """
+    return await ctf_intelligence.get_exploit_strategy(vuln_type)
+
+@mcp.tool()
+async def ctf_intelligence_status() -> str:
+    """CTF Intelligenceモジュールのステータスを確認"""
+    return await ctf_intelligence.get_status()
+
+
+# =============================================================================
+# CTF Strategy ツール（戦略アドバイザー）
+# =============================================================================
+
+@mcp.tool()
+async def ctf_suggest_strategy(problem_description: str) -> str:
+    """CTF問題の説明から最適なアプローチを提案
+
+    Args:
+        problem_description: 問題文または問題の説明
+    """
+    return await ctf_strategy.analyze_problem(problem_description)
+
+@mcp.tool()
+async def ctf_get_strategy(category: str) -> str:
+    """カテゴリ別の解法戦略を取得（crypto, web, pwn, reversing, forensics, misc）
+
+    Args:
+        category: CTFカテゴリ
+    """
+    return await ctf_strategy.get_strategy(category)
+
+@mcp.tool()
+async def ctf_get_checklist(checklist_type: str) -> str:
+    """調査チェックリストを取得（initial, web, binary, crypto, forensics）
+
+    Args:
+        checklist_type: チェックリストのタイプ
+    """
+    return await ctf_strategy.get_checklist(checklist_type)
+
+@mcp.tool()
+async def ctf_categories() -> str:
+    """利用可能なCTFカテゴリと概要を表示"""
+    return await ctf_strategy.get_all_categories()
+
+@mcp.tool()
+async def ctf_strategy_status() -> str:
+    """CTF Strategyモジュールのステータスを確認"""
+    return await ctf_strategy.get_status()
+
+
 if __name__ == "__main__":
     print("Starting Advanced Recon Scanner MCP server...", file=sys.stderr)
-    print("Modules loaded: nmap_scanner, web_scanner, dns_scanner, service_analyzer, ssh_explorer, ctf_toolkit", file=sys.stderr)
-    print("Features: Network scanning, Web analysis, DNS investigation, Service security analysis, SSH post-connection investigation, CTF Toolkit", file=sys.stderr)
+    print("Modules loaded: nmap_scanner, web_scanner, dns_scanner, service_analyzer, ssh_explorer, ctf_toolkit, ctf_intelligence, ctf_strategy", file=sys.stderr)
+    print("Features: Network scanning, Web analysis, DNS investigation, Service security analysis, SSH post-connection investigation, CTF Toolkit, CTF AI Intelligence, CTF Strategy Advisor", file=sys.stderr)
     mcp.run()

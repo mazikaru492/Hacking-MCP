@@ -7,5 +7,7 @@ python-whois>=0.8.0
 dnspython>=2.4.2
 beautifulsoup4>=4.12.2
 playwright==1.44.0
-paramiko>=3.4.0 
+paramiko>=3.4.0
 asyncssh
+pycryptodome>=3.20.0
+hashid>=3.1.4

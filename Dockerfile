@@ -33,11 +33,14 @@ RUN apt-get update && \
     # === パスワード解析ツール ===
     john \
     hydra \
+    fcrackzip \
     # === フォレンジック・ステガノグラフィ ===
     binwalk \
     foremost \
     steghide \
     libimage-exiftool-perl \
+    pngcheck \
+    xxd \
     # === リバースエンジニアリング ===
     ltrace \
     strace \
@@ -45,6 +48,9 @@ RUN apt-get update && \
     tcpdump \
     tshark \
     netcat-openbsd \
+    # === Ruby for zsteg ===
+    ruby \
+    ruby-dev \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
@@ -58,6 +64,18 @@ RUN git clone --depth 1 https://github.com/radareorg/radare2.git /tmp/radare2 &&
     cd /tmp/radare2 && \
     sys/install.sh && \
     rm -rf /tmp/radare2
+
+# Zsteg（PNGステガノグラフィ解析）のインストール
+RUN gem install zsteg
+
+# Stegseek（高速Steghideクラッカー）のインストール
+RUN curl -L -o /tmp/stegseek.deb https://github.com/RickdeJager/stegseek/releases/download/v0.6/stegseek_0.6-1.deb && \
+    apt-get update && apt-get install -y /tmp/stegseek.deb && \
+    rm /tmp/stegseek.deb && \
+    rm -rf /var/lib/apt/lists/*
+
+# HashID（Pythonツール）とpdf-parserのインストール
+RUN pip install --no-cache-dir hashid pdf-parser
 
 # Wordlistsのダウンロード（rockyou.txt）
 RUN mkdir -p /usr/share/wordlists && \

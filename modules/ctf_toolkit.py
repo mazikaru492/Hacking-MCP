@@ -326,6 +326,101 @@ class CTFToolkit:
         return f"=== Base64 Decode ===\nInput: {data[:50]}...\n\nDecoded:\n{result}"
 
     # =========================================================================
+    # 追加フォレンジック・解析ツール
+    # =========================================================================
+
+    async def zsteg_analyze(self, file_path: str, options: Optional[str] = None) -> str:
+        """Zstegでpng/bmpのステガノグラフィを検出
+
+        Args:
+            file_path: 解析対象のPNG/BMPファイル
+            options: 追加オプション（例: "-a" で全チャンネル解析）
+        """
+        cmd = ["zsteg", file_path]
+        if options:
+            cmd.extend(options.split())
+        result = await self._run_command(cmd, timeout=60)
+        return f"=== Zsteg Steganography Analysis ===\nFile: {file_path}\n\n{result}"
+
+    async def pngcheck_analyze(self, file_path: str) -> str:
+        """PNGCheckでPNGファイルの整合性をチェック
+
+        Args:
+            file_path: チェック対象のPNGファイル
+        """
+        cmd = ["pngcheck", "-v", file_path]
+        result = await self._run_command(cmd, timeout=30)
+        return f"=== PNGCheck Analysis ===\nFile: {file_path}\n\n{result}"
+
+    async def xxd_dump(self, file_path: str, length: int = 256) -> str:
+        """xxdでファイルの16進ダンプを取得
+
+        Args:
+            file_path: ダンプ対象ファイル
+            length: 表示するバイト数（デフォルト: 256）
+        """
+        cmd = ["xxd", "-l", str(length), file_path]
+        result = await self._run_command(cmd, timeout=30)
+        return f"=== Hex Dump (xxd) ===\nFile: {file_path}\nLength: {length} bytes\n\n{result}"
+
+    async def file_identify(self, file_path: str) -> str:
+        """fileコマンドでファイルタイプを識別
+
+        Args:
+            file_path: 識別対象ファイル
+        """
+        cmd = ["file", "-b", file_path]
+        result = await self._run_command(cmd, timeout=10)
+
+        # 詳細情報も取得
+        cmd_magic = ["file", "-i", file_path]
+        mime_result = await self._run_command(cmd_magic, timeout=10)
+
+        return f"=== File Type Identification ===\nFile: {file_path}\n\nType: {result}\nMIME: {mime_result}"
+
+    async def fcrackzip_crack(self, file_path: str, wordlist: str = "/usr/share/wordlists/rockyou.txt") -> str:
+        """fcrackzipでZIPファイルのパスワードをクラック
+
+        Args:
+            file_path: パスワード付きZIPファイル
+            wordlist: 使用するワードリスト
+        """
+        cmd = ["fcrackzip", "-v", "-D", "-u", "-p", wordlist, file_path]
+        result = await self._run_command(cmd, timeout=600)
+        return f"=== FcrackZIP Password Crack ===\nFile: {file_path}\nWordlist: {wordlist}\n\n{result}"
+
+    async def identify_hash(self, hash_string: str) -> str:
+        """hashidでハッシュタイプを識別
+
+        Args:
+            hash_string: 識別対象のハッシュ文字列
+        """
+        cmd = ["hashid", hash_string]
+        result = await self._run_command(cmd, timeout=10)
+        return f"=== Hash Type Identification ===\nHash: {hash_string}\n\n{result}"
+
+    async def stegseek_extract(self, file_path: str, wordlist: str = "/usr/share/wordlists/rockyou.txt") -> str:
+        """Stegseekで高速steghideパスワードクラック
+
+        Args:
+            file_path: 対象ファイル（JPEG, BMP等）
+            wordlist: 使用するワードリスト
+        """
+        cmd = ["stegseek", file_path, wordlist]
+        result = await self._run_command(cmd, timeout=300)
+        return f"=== Stegseek Extraction ===\nFile: {file_path}\nWordlist: {wordlist}\n\n{result}"
+
+    async def pdfparser_analyze(self, file_path: str) -> str:
+        """pdf-parserでPDF構造を解析
+
+        Args:
+            file_path: 解析対象のPDFファイル
+        """
+        cmd = ["pdf-parser", "--stats", file_path]
+        result = await self._run_command(cmd, timeout=60)
+        return f"=== PDF Parser Analysis ===\nFile: {file_path}\n\n{result}"
+
+    # =========================================================================
     # ステータス確認
     # =========================================================================
 
