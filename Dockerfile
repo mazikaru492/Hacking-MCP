@@ -71,8 +71,12 @@ RUN gem install zsteg
 # Stegseek（高速Steghideクラッカー）のインストール - スキップ（Debian Bookworm互換性問題）
 # 代わりにsteghideを使用（既にインストール済み）
 
-# HashID（Pythonツール）とpdf-parserのインストール
-RUN pip install --no-cache-dir hashid pdf-parser
+# HashID（Pythonツール）のインストール
+RUN pip install --no-cache-dir hashid
+
+# pdf-parserのインストール（Didier Stevensツール）
+RUN curl -L -o /usr/local/bin/pdf-parser.py https://raw.githubusercontent.com/DidierStevens/DidierStevensSuite/master/pdf-parser.py && \
+    chmod +x /usr/local/bin/pdf-parser.py
 
 # Pwntools/Ropper (エクスプロイト開発用)
 RUN pip install --no-cache-dir pwntools ropper
